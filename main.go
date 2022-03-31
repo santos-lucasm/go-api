@@ -23,6 +23,12 @@ func main() {
 	email := os.Getenv("EMAIL")
 	passw := os.Getenv("PASSWORD")
 
-	// fmt.Println(user)
-	login(user, email, passw)
+	//TODO: rework this into modules
+	bearer_token, ref := login(user, email, passw)
+
+	check_login(bearer_token)
+
+	bearer_token, ref = refresh_token(ref)
+
+	logout(bearer_token)
 }

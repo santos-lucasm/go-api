@@ -26,7 +26,21 @@ type CheckLoginResponse struct {
 	IsAuthenticated bool   `json:"isAuthenticated"`
 }
 
-func login(user string, email string, passw string) {
+type LogoutResponse struct {
+	Result string `json:"result"`
+}
+
+type RefreshRequest struct {
+	Token string `json:"token"`
+}
+
+type RefreshResponse struct {
+	Result  string     `json:"result"`
+	Token   TokenLogin `json:"token"`
+	Message string     `json:"message"`
+}
+
+func login(user string, email string, passw string) (string, string) {
 
 	url := root_url() + "/auth/login"
 
@@ -43,13 +57,50 @@ func login(user string, email string, passw string) {
 	json.Unmarshal(response, &responseObject)
 	fmt.Println(string(responseObject.Result))
 
-	// ------------------------------------------------------------------
+	return "Bearer " + responseObject.Token.Session, responseObject.Token.Refresh
 
-	bearer_token := "Bearer " + string(responseObject.Token.Session)
-	check_url := root_url() + "/auth/check"
-	check_response := httpRequest("GET", check_url, nil, bearer_token)
-	var checkResponseObject CheckLoginResponse
-	json.Unmarshal(check_response, &checkResponseObject)
-	fmt.Println(string(checkResponseObject.Result))
-	fmt.Println(checkResponseObject.IsAuthenticated)
+}
+
+func check_login(token string) {
+
+	url := root_url() + "/auth/check"
+
+	response := httpRequest("GET", url, nil, token)
+
+	var responseObject CheckLoginResponse
+	json.Unmarshal(response, &responseObject)
+
+	fmt.Println(string(responseObject.Result))
+	fmt.Println(responseObject.IsAuthenticated)
+}
+
+func logout(token string) {
+
+	url := root_url() + "/auth/logout"
+
+	response := httpRequest("POST", url, nil, token)
+
+	var responseObject LogoutResponse
+	json.Unmarshal(response, &responseObject)
+
+	fmt.Println(string(responseObject.Result))
+}
+
+func refresh_token(token string) (string, string) {
+
+	url := root_url() + "/auth/refresh"
+
+	var body RefreshRequest
+	body.Token = token
+
+	json_data, err := json.Marshal(&body)
+	handleError(err)
+
+	response := httpRequest("POST", url, json_data, "")
+
+	var responseObject RefreshResponse
+	json.Unmarshal(response, &responseObject)
+	fmt.Println(string(responseObject.Result))
+
+	return responseObject.Token.Session, responseObject.Token.Refresh
 }
