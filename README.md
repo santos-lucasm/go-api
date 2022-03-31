@@ -21,6 +21,12 @@ USER=<YOUR-MANGADEX-USER>
 EMAIL=<YOUR-MANGADEX-EMAIL>
 PASSWORD=<YOUR-MANGADEX-PASSWORD>
 ```
+3. Save the file
+4. In the same folder, type the following in the terminal
+```
+go install
+go run go-api
+```
 
 ## Observations
 
