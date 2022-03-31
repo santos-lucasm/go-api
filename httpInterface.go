@@ -8,41 +8,39 @@ import (
 	"net/http"
 )
 
-func httpGet(url string) *http.Response {
-
-	resp, err := http.Get(url)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println(resp.Status)
-	return resp
-}
-
-func httpPost(url string, data []byte) *http.Response {
-
-	// json_data, err := json.Marshal(data)
-
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(data))
+func handleError(err error) {
 
 	if err != nil {
+		fmt.Printf("{ERROR}: %s", err.Error())
 		log.Fatal(err)
 	}
-
-	fmt.Println(resp.Status)
-	return resp
 }
 
 func processResponse(response *http.Response) []byte {
 
 	responseData, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	handleError(err)
 	return responseData
+}
+
+func httpRequest(method string, url string, data []byte, token string) []byte {
+
+	fmt.Printf("{HTTP}: %s at %s\n", method, url)
+
+	// create request
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(data))
+	handleError(err)
+
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	req.Header.Add("Authorization", token)
+
+	// send request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	handleError(err)
+
+	fmt.Printf("{HTTP}: %s\n", resp.Status)
+	// fmt.Printf("{HTTP}: %s\n", resp.Header)
+	defer resp.Body.Close()
+	return processResponse(resp)
 }

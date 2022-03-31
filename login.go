@@ -3,10 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 )
 
-type loginResponse struct {
+type LoginResponse struct {
 	Result string     `json:"result"`
 	Token  TokenLogin `json:"token"`
 }
@@ -22,29 +21,35 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
-func login() {
+type CheckLoginResponse struct {
+	Result          string `json:"result"`
+	IsAuthenticated bool   `json:"isAuthenticated"`
+}
+
+func login(user string, email string, passw string) {
 
 	url := root_url() + "/auth/login"
 
-	// data := map[string]string{"username": "a", "email": "a", "password": "a"}
 	var body LoginRequest
-	body.Username = "lucas"
-	body.Email = "santos.lucasmmatheus@gmail.com"
-	body.Password = "Ftypw"
+	body.Username = user
+	body.Email = email
+	body.Password = passw
 
 	json_data, err := json.Marshal(&body)
-	if err != nil {
-		log.Fatal(err)
-	}
+	handleError(err)
 
-	response := httpPost(url, json_data)
-	responseData := processResponse(response)
-
-	var responseObject loginResponse
-	json.Unmarshal(responseData, &responseObject)
+	response := httpRequest("POST", url, json_data, "")
+	var responseObject LoginResponse
+	json.Unmarshal(response, &responseObject)
 	fmt.Println(string(responseObject.Result))
-	fmt.Println(string(responseObject.Token.Session))
-	fmt.Println(string(responseObject.Token.Refresh))
 
-	// fmt.Println(loginProcess())
+	// ------------------------------------------------------------------
+
+	bearer_token := "Bearer " + string(responseObject.Token.Session)
+	check_url := root_url() + "/auth/check"
+	check_response := httpRequest("GET", check_url, nil, bearer_token)
+	var checkResponseObject CheckLoginResponse
+	json.Unmarshal(check_response, &checkResponseObject)
+	fmt.Println(string(checkResponseObject.Result))
+	fmt.Println(checkResponseObject.IsAuthenticated)
 }
