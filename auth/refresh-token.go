@@ -37,7 +37,7 @@ func RefreshToken(token string) (string, string) {
 	var responseObject refreshResponse
 	json.Unmarshal(response, &responseObject)
 	fmt.Printf("{REFRESH-TOKEN} result: %s\n", responseObject.Result)
-	fmt.Printf("{REFRESH-TOKEN} result: %s\n", responseObject.Message)
+	fmt.Printf("{REFRESH-TOKEN} message: %s\n", responseObject.Message)
 
 	return responseObject.Token.Session, responseObject.Token.Refresh
 }
