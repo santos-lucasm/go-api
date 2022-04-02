@@ -1,34 +1,19 @@
 package main
 
 import (
-	"os"
-
-	"github.com/joho/godotenv"
+	auth "mangadex/auth"
+	utils "mangadex/utils"
 )
-
-func root_url() string {
-	return "https://api.mangadex.org"
-}
-
-func load_env_variables() {
-	err := godotenv.Load("credentials.env")
-	handleError(err)
-}
 
 func main() {
 
-	load_env_variables()
+	user, email, passw := utils.CredentialsInit()
 
-	user := os.Getenv("USER")
-	email := os.Getenv("EMAIL")
-	passw := os.Getenv("PASSWORD")
+	bearer_token, ref := auth.Login(user, email, passw)
 
-	//TODO: rework this into modules
-	bearer_token, ref := login(user, email, passw)
+	auth.CheckToken(bearer_token)
 
-	check_login(bearer_token)
+	bearer_token, ref = auth.RefreshToken(ref)
 
-	bearer_token, ref = refresh_token(ref)
-
-	logout(bearer_token)
+	auth.Logout(bearer_token)
 }

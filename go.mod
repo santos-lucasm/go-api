@@ -1,4 +1,4 @@
-module go-api
+module mangadex
 
 go 1.18
 
