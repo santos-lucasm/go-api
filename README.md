@@ -1,4 +1,4 @@
-# MANGADEX GO-API
+# MANGADEX API
 
 ## Description
 
@@ -14,8 +14,9 @@
 
 ## How to execute the program
 
-1. Go inside src/go-api folder you just cloned
-2. Create a file named credentials.env, open it with a text editor and type the following
+1. Go inside `src/mangadex` folder you just cloned
+2. Enter the `util` folder
+2. Create a file named `credentials.env`, open it with a text editor and type the following
 ```
 USER=<YOUR-MANGADEX-USER>
 EMAIL=<YOUR-MANGADEX-EMAIL>
@@ -25,7 +26,7 @@ PASSWORD=<YOUR-MANGADEX-PASSWORD>
 4. In the same folder, type the following in the terminal
 ```
 go install
-go run go-api
+go run mangadex
 ```
 
 ## Observations
