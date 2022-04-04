@@ -1,27 +1,21 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 
 	auth "mangadex/auth"
+	scanlation "mangadex/scanlation"
 	utils "mangadex/utils"
-	"os"
 )
 
+// Allowed operations
 const (
-	LOGIN         string = "LOGIN"
-	CHECK_LOGIN          = "CHECK_LOGIN"
-	LOGOUT               = "LOGOUT"
-	REFRESH_TOKEN        = "REFRESH_TOKEN"
+	LOGIN           string = "LOGIN"
+	CHECK_LOGIN            = "CHECK_LOGIN"
+	LOGOUT                 = "LOGOUT"
+	REFRESH_TOKEN          = "REFRESH_TOKEN"
+	SCANLATION_LIST        = "SCANLATION_LIST"
 )
-
-func inputHandle() string {
-	fmt.Print("\tEnter operation: ")
-	input := bufio.NewScanner(os.Stdin)
-	input.Scan()
-	return input.Text()
-}
 
 func main() {
 
@@ -29,9 +23,13 @@ func main() {
 	var bearer_token string
 	var refresh_token string
 
-	input := inputHandle()
+	utils.ShowHeader()
+	input := utils.InputHandle("> ")
+
 	for input != "" {
 
+		utils.ClearTerminal()
+		fmt.Printf("Operation: %s", input)
 		switch input {
 
 		case LOGIN:
@@ -42,8 +40,12 @@ func main() {
 			bearer_token, refresh_token = auth.RefreshToken(refresh_token)
 		case LOGOUT:
 			auth.Logout(bearer_token)
-
+		case SCANLATION_LIST:
+			scanlation.ScanlationList(5, 0, nil, "", "pt-br", nil)
 		}
-		input = inputHandle()
+
+		utils.InputHandle("\nPress ENTER to continue...")
+		utils.ShowHeader()
+		input = utils.InputHandle("> ")
 	}
 }
